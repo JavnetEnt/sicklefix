@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pain Log | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b3202f">
+  <link rel="icon" href="icon.svg">
+  <style>
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .chips label { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: 99px; font-weight: 500; font-size: 15px; cursor: pointer; background: var(--card); }
+    .chips input { width: auto; min-height: 0; margin: 0; accent-color: var(--red); }
+    .big { font: 800 2.4rem/1 system-ui, sans-serif; color: var(--red); }
+    input[type=range] { padding: 0; accent-color: var(--red); }
+    .stats3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+    .stats3 div { background: var(--soft); border-radius: 12px; padding: 10px; text-align: center; font: 14px system-ui, sans-serif; }
+    .stats3 b { display: block; font-size: 1.3rem; color: var(--red); }
+    .entry { border-top: 1px solid var(--line); padding: 12px 0; }
+    .entry:first-child { border-top: 0; }
+    .entry .lvl { display: inline-block; min-width: 34px; text-align: center; background: var(--red); color: #fff; border-radius: 8px; padding: 2px 8px; font: 700 15px system-ui, sans-serif; margin-right: 8px; }
+    .entry small { color: var(--mut); font-family: system-ui, sans-serif; }
+    .del { background: transparent; color: var(--mut); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; font-size: 13px; min-height: 0; cursor: pointer; float: right; }
+    #warn { display: none; }
+    #chart { width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">SickleFix</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <ul class="links" id="links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="card.html">Emergency Card</a></li>
+      <li><a href="painlog.html">Pain Log</a></li>
+      <li><a href="index.html#genotype">Know Your Genotype</a></li>
+      <li><a href="clinics.html">Find Care</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
+    </ul>
+  </nav>
+
+  <h1>My Pain Log</h1>
+  <p class="note">Your log is saved only on this device. It is never sent anywhere. Showing your doctor a record of your crises can help them treat you better.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">Add an entry</h2>
+
+    <label>When <input type="datetime-local" id="when"></label>
+
+    <label>Pain level: <span class="big" id="lvl">5</span> / 10
+      <input type="range" id="level" min="1" max="10" value="5">
+    </label>
+
+    <label>Where does it hurt?</label>
+    <div class="chips" id="areas"></div>
+
+    <label>What might have triggered it?</label>
+    <div class="chips" id="triggers"></div>
+
+    <label>Notes <textarea id="notes" rows="2" placeholder="Medicine taken, fever, how you felt..."></textarea></label>
+
+    <div id="warn" class="alert">
+      This level of pain, or fever, chest pain or trouble breathing, can be an emergency. Please go to a hospital or have someone take you now. You can also use the SOS button on your <a href="card.html">emergency card</a>.
+    </div>
+
+    <button class="btn" id="save">Save entry</button>
+    <p class="note" id="msg"></p>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2 style="margin-top:0">Your pattern</h2>
+    <div class="stats3">
+      <div><b id="sCount">0</b>entries</div>
+      <div><b id="sAvg">-</b>average pain</div>
+      <div><b id="sTrig">-</b>top trigger</div>
+    </div>
+    <svg id="chart" viewBox="0 0 600 220" role="img" aria-label="Pain levels over time"></svg>
+    <p class="note" id="chartNote"></p>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2 style="margin-top:0">History</h2>
+    <div id="history"></div>
+    <button class="btn alt" id="clearAll">Delete all entries</button>
+  </div>
+</div>
+
+<script src="nav.js"></script>
+<script>
+  const AREAS = ['Back', 'Chest', 'Belly', 'Arms', 'Legs', 'Joints', 'Head'];
+  const TRIGGERS = ['Not enough water', 'Cold or harmattan', 'Infection or fever', 'Stress', 'Tiredness', 'Not sure'];
+  const KEY = 'painLog';
+
+  function loadLog() {
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; }
+  }
+  function saveLog(list) { localStorage.setItem(KEY, JSON.stringify(list)); }
+
+  function makeChips(boxId, items, name) {
+    const box = document.getElementById(boxId);
+    items.forEach(text => {
+      const label = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.name = name;
+      cb.value = text;
+      label.append(cb, document.createTextNode(text));
+      box.appendChild(label);
+    });
+  }
+  function checked(name) {
+    return [...document.querySelectorAll('input[name="' + name + '"]:checked')].map(c => c.value);
+  }
+
+  function nowLocal() {
+    const d = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
+    return d.toISOString().slice(0, 16);
+  }
+
+  const level = document.getElementById('level');
+  function updateLevel() {
+    document.getElementById('lvl').textContent = level.value;
+    const risky = +level.value >= 7 || checked('area').includes('Chest');
+    document.getElementById('warn').style.display = risky ? 'block' : 'none';
+  }
+  level.oninput = updateLevel;
+  document.getElementById('areas').addEventListener('change', updateLevel);
+
+  document.getElementById('save').onclick = () => {
+    const list = loadLog();
+    list.push({
+      id: Date.now(),
+      when: document.getElementById('when').value || nowLocal(),
+      level: +level.value,
+      areas: checked('area'),
+      triggers: checked('trigger'),
+      notes: document.getElementById('notes').value.trim()
+    });
+    saveLog(list);
+    document.getElementById('notes').value = '';
+    document.querySelectorAll('.chips input').forEach(c => c.checked = false);
+    document.getElementById('when').value = nowLocal();
+    document.getElementById('msg').textContent = 'Saved on this device.';
+    updateLevel();
+    render();
+  };
+
+  function render() {
+    const list = loadLog().sort((a, b) => a.when.localeCompare(b.when));
+    renderStats(list);
+    renderChart(list);
+    renderHistory(list);
+  }
+
+  function renderStats(list) {
+    document.getElementById('sCount').textContent = list.length;
+    if (!list.length) {
+      document.getElementById('sAvg').textContent = '-';
+      document.getElementById('sTrig').textContent = '-';
+      return;
+    }
+    const avg = list.reduce((s, e) => s + e.level, 0) / list.length;
+    document.getElementById('sAvg').textContent = avg.toFixed(1);
+    const counts = {};
+    list.forEach(e => e.triggers.forEach(t => counts[t] = (counts[t] || 0) + 1));
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    document.getElementById('sTrig').textContent = top ? top[0] : '-';
+  }
+
+  function renderChart(list) {
+    const svg = document.getElementById('chart');
+    svg.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+    const data = list.slice(-14);
+    document.getElementById('chartNote').textContent =
+      data.length ? 'Your last ' + data.length + ' entries (oldest on the left).' : 'Add an entry to see your chart.';
+    if (!data.length) return;
+
+    const left = 30, bottom = 190, top = 10, width = 560;
+    for (let v = 0; v <= 10; v += 5) {
+      const y = bottom - (v / 10) * (bottom - top);
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', left); line.setAttribute('x2', left + width);
+      line.setAttribute('y1', y); line.setAttribute('y2', y);
+      line.style.stroke = 'var(--line)';
+      svg.appendChild(line);
+      const t = document.createElementNS(ns, 'text');
+      t.setAttribute('x', 4); t.setAttribute('y', y + 4);
+      t.setAttribute('font-size', '12');
+      t.style.fill = 'var(--mut)';
+      t.textContent = v;
+      svg.appendChild(t);
+    }
+
+    const slot = width / data.length;
+    const barW = Math.min(36, slot * 0.6);
+    data.forEach((e, i) => {
+      const h = (e.level / 10) * (bottom - top);
+      const x = left + i * slot + (slot - barW) / 2;
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', x); rect.setAttribute('y', bottom - h);
+      rect.setAttribute('width', barW); rect.setAttribute('height', h);
+      rect.setAttribute('rx', 4);
+      rect.style.fill = e.level >= 7 ? 'var(--red)' : 'var(--ok)';
+      svg.appendChild(rect);
+
+      const lab = document.createElementNS(ns, 'text');
+      lab.setAttribute('x', x + barW / 2); lab.setAttribute('y', 208);
+      lab.setAttribute('text-anchor', 'middle'); lab.setAttribute('font-size', '11');
+      lab.style.fill = 'var(--mut)';
+      lab.textContent = e.when.slice(8, 10) + '/' + e.when.slice(5, 7);
+      svg.appendChild(lab);
+    });
+  }
+
+  function renderHistory(list) {
+    const box = document.getElementById('history');
+    box.innerHTML = '';
+    if (!list.length) { box.textContent = 'No entries yet.'; return; }
+
+    [...list].reverse().forEach(e => {
+      const row = document.createElement('div');
+      row.className = 'entry';
+
+      const del = document.createElement('button');
+      del.className = 'del';
+      del.textContent = 'Delete';
+      del.onclick = () => {
+        saveLog(loadLog().filter(x => x.id !== e.id));
+        render();
+      };
+
+      const lvl = document.createElement('span');
+      lvl.className = 'lvl';
+      lvl.textContent = e.level;
+
+      const when = document.createElement('small');
+      when.textContent = new Date(e.when).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+
+      const top = document.createElement('div');
+      top.append(del, lvl, when);
+      row.appendChild(top);
+
+      if (e.areas.length) {
+        const a = document.createElement('div');
+        a.textContent = 'Where: ' + e.areas.join(', ');
+        row.appendChild(a);
+      }
+      if (e.triggers.length) {
+        const t = document.createElement('div');
+        t.textContent = 'Triggers: ' + e.triggers.join(', ');
+        row.appendChild(t);
+      }
+      if (e.notes) {
+        const n = document.createElement('div');
+        n.className = 'note';
+        n.textContent = e.notes;
+        row.appendChild(n);
+      }
+      box.appendChild(row);
+    });
+  }
+
+  document.getElementById('clearAll').onclick = () => {
+    if (confirm('Delete every entry on this device? This cannot be undone.')) {
+      localStorage.removeItem(KEY);
+      render();
+    }
+  };
+
+  makeChips('areas', AREAS, 'area');
+  makeChips('triggers', TRIGGERS, 'trigger');
+  document.getElementById('when').value = nowLocal();
+  updateLevel();
+  render();
+</script>
+</body>
+</html>

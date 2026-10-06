@@ -1,7 +1,8 @@
-const CACHE = 'sicklefix-v2';
+const CACHE = 'sicklefix-v4';
 const FILES = [
   '/', '/index.html', '/card.html', '/clinics.html', '/quiz.html',
   '/style.css', '/nav.js', '/icon.svg', '/manifest.json'
+  '/painlog.html'
 ];
 
 self.addEventListener('install', event => {
