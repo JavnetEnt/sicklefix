@@ -1,89 +1,57 @@
 const express = require('express');
-const app = express();
 const fs = require('fs');
 const path = require('path');
-
-function loadClinics() {
-  const file = path.join(__dirname, 'data', 'clinics.json');
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
-}
+const app = express();
 
 app.use(express.json());
 app.use(express.static('public'));
 
-const questions = [
-  {
-    id: 1,
-    text: "You can catch sickle cell disease by touching or sharing food with a warrior.",
-    options: ["Myth", "Fact"],
-    answer: 0,
-    explain: "Sickle cell is genetic. It is inherited from parents, never spread by contact."
-  },
-  {
-    id: 2,
-    text: "Two parents with genotype AS have a 25% chance of a child with SS in each pregnancy.",
-    options: ["Myth", "Fact"],
-    answer: 1,
-    explain: "Each pregnancy carries a 25% chance of SS, 50% of AS, and 25% of AA."
-  },
-  {
-    id: 3,
-    text: "Warriors often exaggerate crisis pain to get attention.",
-    options: ["Myth", "Fact"],
-    answer: 0,
-    explain: "Crisis pain is real and can be severe. Disbelief is one of the biggest struggles warriors face."
-  },
-  {
-    id: 4,
-    text: "A fever in a person with sickle cell disease is an emergency.",
-    options: ["Myth", "Fact"],
-    answer: 1,
-    explain: "Infections can become serious quickly. A fever needs urgent medical attention."
-  },
-  {
-    id: 5,
-    text: "Staying hydrated can help reduce the risk of a crisis.",
-    options: ["Myth", "Fact"],
-    answer: 1,
-    explain: "Dehydration is a common trigger, so drinking enough water matters every day."
-  }
-];
+function loadJSON(name) {
+  return JSON.parse(fs.readFileSync(path.join(__dirname, 'data', name), 'utf8'));
+}
 
-// Send questions WITHOUT the answers
+// ---------- Quiz ----------
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// /api/questions?topic=myths&n=8  (answers are NOT sent)
 app.get('/api/questions', (req, res) => {
-  const safe = questions.map(q => ({ id: q.id, text: q.text, options: q.options }));
-  res.json(safe);
+  let list = loadJSON('questions.json');
+  const { topic, n } = req.query;
+  if (topic && topic !== 'all') list = list.filter(q => q.topic === topic);
+  list = shuffle(list);
+  const count = parseInt(n, 10);
+  if (count > 0) list = list.slice(0, count);
+  res.json(list.map(q => ({ id: q.id, topic: q.topic, text: q.text, options: q.options })));
 });
 
-// Check one answer
 app.post('/api/check', (req, res) => {
   const { id, choice } = req.body;
-  const q = questions.find(item => item.id === id);
+  const q = loadJSON('questions.json').find(item => item.id === id);
   if (!q) return res.status(404).json({ error: 'Question not found' });
-  res.json({ correct: choice === q.answer, explain: q.explain });
+  res.json({ correct: choice === q.answer, answer: q.answer, explain: q.explain });
 });
 
-// List clinics, with optional filters: /api/clinics?state=Oyo&q=hospital
+// ---------- Clinics ----------
 app.get('/api/clinics', (req, res) => {
-  let list = loadClinics();
+  let list = loadJSON('clinics.json');
   const { state, q } = req.query;
-
-  if (state) {
-    list = list.filter(c => c.state.toLowerCase() === state.toLowerCase());
-  }
+  if (state) list = list.filter(c => c.state.toLowerCase() === state.toLowerCase());
   if (q) {
     const term = q.toLowerCase();
-    list = list.filter(c =>
-      (c.name + ' ' + c.city + ' ' + c.type).toLowerCase().includes(term)
-    );
+    list = list.filter(c => (c.name + ' ' + c.city + ' ' + c.type).toLowerCase().includes(term));
   }
   res.json(list);
 });
 
-// List of states that have entries (for the dropdown)
 app.get('/api/states', (req, res) => {
-  const states = [...new Set(loadClinics().map(c => c.state))].sort();
-  res.json(states);
+  res.json([...new Set(loadJSON('clinics.json').map(c => c.state))].sort());
 });
 
 const PORT = process.env.PORT || 3000;
