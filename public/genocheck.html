@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GenoCheck | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b3202f">
+  <link rel="icon" href="icon.svg">
+  <style>
+    :root { --amber: #c77d0a; --violet: #6b4bb8; }
+    @media (prefers-color-scheme: dark) { :root { --amber: #f0b45a; --violet: #b69cf5; } }
+    .pick { display: grid; gap: 12px; }
+    @media (min-width: 640px) { .pick { grid-template-columns: 1fr 1fr; } }
+    .punnett { border-collapse: separate; border-spacing: 8px; margin: 14px auto 6px; }
+    .punnett th { font: 700 16px system-ui, sans-serif; color: var(--mut); padding: 4px 8px; }
+    .punnett td { width: 112px; text-align: center; background: var(--soft); border-radius: 12px; padding: 10px 6px; font: 600 13px/1.3 system-ui, sans-serif; }
+    .punnett td b { display: block; font-size: 18px; margin-top: 2px; }
+    .corner { font: 12px system-ui, sans-serif; color: var(--mut); }
+    .headline { font: 700 1.25rem/1.35 system-ui, sans-serif; margin: 0 0 8px; }
+    .bar { display: flex; height: 38px; border-radius: 10px; overflow: hidden; margin: 12px 0; }
+    .bar span { display: flex; align-items: center; justify-content: center; color: #fff; font: 700 13px system-ui, sans-serif; }
+    .legend { display: grid; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
+    .legend li { display: flex; gap: 10px; align-items: flex-start; max-width: none; font: 15px/1.4 system-ui, sans-serif; }
+    .dot { flex: none; width: 14px; height: 14px; border-radius: 50%; margin-top: 4px; }
+    details { border-top: 1px solid var(--line); padding: 10px 0; }
+    details summary { font: 600 16px system-ui, sans-serif; cursor: pointer; }
+    details p { margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">SickleFix</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <ul class="links" id="links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="card.html">Emergency Card</a></li>
+      <li><a href="painlog.html">Companion</a></li>
+      <li><a href="genocheck.html">Genocheck</a></li>
+      <li><a href="clinics.html">Find Care</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
+    </ul>
+  </nav>
+
+  <h1>GenoCheck</h1>
+  <p class="note">Choose each partner's genotype to see the possible outcomes for their children. Nothing you choose is saved or sent anywhere.</p>
+
+  <div class="card">
+    <div class="pick">
+      <label>Partner 1
+        <select id="p1"></select>
+      </label>
+      <label>Partner 2
+        <select id="p2"></select>
+      </label>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px" aria-live="polite">
+    <p class="headline" id="headline"></p>
+    <p id="explain"></p>
+    <div class="bar" id="bar"></div>
+    <div style="overflow-x:auto"><table class="punnett" id="grid"></table></div>
+    <p class="note" style="text-align:center">Each box is one equally likely outcome.</p>
+    <ul class="legend" id="legend"></ul>
+  </div>
+
+  <div class="alert" style="margin-top:20px" id="advice"></div>
+
+  <div class="card" style="margin-top:20px">
+    <h2 style="margin-top:0">What do the genotypes mean?</h2>
+    <details><summary>AA</summary><p>No sickle or C gene. Normal haemoglobin.</p></details>
+    <details><summary>AS and AC (carriers)</summary><p>One normal gene and one sickle (S) or C gene. Carriers usually stay well, but can pass the gene on. AS is also called sickle cell trait.</p></details>
+    <details><summary>SS</summary><p>Two sickle genes. This is sickle cell anaemia, the most common form of sickle cell disease in Nigeria.</p></details>
+    <details><summary>SC</summary><p>One sickle gene and one C gene. This is also a form of sickle cell disease and can cause pain crises and complications.</p></details>
+    <details><summary>CC</summary><p>Two C genes. This is haemoglobin C disease, which is different from sickle cell disease and is usually milder. A doctor can explain more.</p></details>
+    <details><summary>Not sure of your genotype?</summary><p>A simple blood test (haemoglobin electrophoresis) at a hospital or laboratory gives the answer. Rarer types exist too, such as beta thalassaemia, so ask a doctor to read your result. <a href="clinics.html">Find a clinic</a>.</p></details>
+  </div>
+
+  <p class="note" style="margin-top:20px">GenoCheck is for awareness and is not medical advice. Chances are the same for every pregnancy: earlier children do not change them.</p>
+</div>
+
+<script src="nav.js"></script>
+<script>
+  const GENOS = ['AA', 'AS', 'AC', 'SS', 'SC', 'CC'];
+
+  const INFO = {
+    AA: { kind: 'normal',  color: '--ok',     label: 'AA: no sickle gene' },
+    AS: { kind: 'carrier', color: '--amber',  label: 'AS: carrier (sickle trait)' },
+    AC: { kind: 'carrier', color: '--amber',  label: 'AC: carrier (C trait)' },
+    SS: { kind: 'scd',     color: '--red',    label: 'SS: sickle cell disease' },
+    SC: { kind: 'scd',     color: '--red',    label: 'SC: sickle cell disease' },
+    CC: { kind: 'c',       color: '--violet', label: 'CC: haemoglobin C disease' }
+  };
+
+  // Combine one gene from each parent into a standard genotype name
+  function combine(a, b) {
+    const g = [a, b].sort().join('');
+    return g === 'CS' ? 'SC' : g;
+  }
+
+  function icon(color) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 40 56');
+    svg.setAttribute('width', '34');
+    svg.setAttribute('height', '48');
+    svg.setAttribute('aria-hidden', 'true');
+    const head = document.createElementNS(ns, 'circle');
+    head.setAttribute('cx', 20); head.setAttribute('cy', 12); head.setAttribute('r', 10);
+    const body = document.createElementNS(ns, 'rect');
+    body.setAttribute('x', 5); body.setAttribute('y', 26);
+    body.setAttribute('width', 30); body.setAttribute('height', 28); body.setAttribute('rx', 13);
+    [head, body].forEach(s => { s.style.fill = 'var(' + color + ')'; svg.appendChild(s); });
+    return svg;
+  }
+
+  function fillSelect(id, value) {
+    const sel = document.getElementById(id);
+    GENOS.forEach(g => {
+      const o = document.createElement('option');
+      o.value = g; o.textContent = g;
+      sel.appendChild(o);
+    });
+    sel.value = value;
+    sel.onchange = update;
+  }
+
+  function update() {
+    const g1 = document.getElementById('p1').value;
+    const g2 = document.getElementById('p2').value;
+    const a1 = g1.split('');
+    const a2 = g2.split('');
+
+    // The 4 equally likely outcomes (a Punnett square)
+    const cells = [];
+    a2.forEach(y => a1.forEach(x => cells.push(combine(x, y))));
+
+    // Count each outcome (each is 25%)
+    const pct = {};
+    cells.forEach(c => pct[c] = (pct[c] || 0) + 25);
+    const scd = (pct.SS || 0) + (pct.SC || 0);
+
+    // Headline
+    const head = document.getElementById('headline');
+    const exp = document.getElementById('explain');
+    if (scd === 0) {
+      head.textContent = 'No chance of sickle cell disease for this couple\u2019s children.';
+      const carrier = (pct.AS || 0) + (pct.AC || 0);
+      exp.textContent = carrier
+        ? 'About ' + carrier + '% of their children may be carriers, who usually stay well but can pass the gene on.'
+        : 'None of their children would carry the sickle gene.';
+    } else {
+      head.textContent = 'Each pregnancy has a ' + scd + '% chance of a child with sickle cell disease.';
+      exp.textContent = 'This is a chance, not a certainty, and it is the same in every pregnancy. Many families in this situation have healthy children and also children with sickle cell disease.';
+    }
+
+    // Coloured bar
+    const bar = document.getElementById('bar');
+    bar.innerHTML = '';
+    GENOS.forEach(g => {
+      if (!pct[g]) return;
+      const s = document.createElement('span');
+      s.style.width = pct[g] + '%';
+      s.style.background = 'var(' + INFO[g].color + ')';
+      s.textContent = g + ' ' + pct[g] + '%';
+      bar.appendChild(s);
+    });
+
+    // Punnett square
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+    const top = grid.insertRow();
+    const corner = top.insertCell();
+    corner.className = 'corner';
+    corner.textContent = 'Gene from:';
+    a1.forEach(x => {
+      const th = document.createElement('th');
+      th.textContent = 'P1: ' + x;
+      top.appendChild(th);
+    });
+    a2.forEach((y, r) => {
+      const row = grid.insertRow();
+      const th = document.createElement('th');
+      th.textContent = 'P2: ' + y;
+      row.appendChild(th);
+      a1.forEach((x, c) => {
+        const g = combine(x, y);
+        const td = row.insertCell();
+        td.appendChild(icon(INFO[g].color));
+        const b = document.createElement('b');
+        b.textContent = g;
+        td.appendChild(b);
+        td.appendChild(document.createTextNode(INFO[g].label.split(': ')[1]));
+      });
+    });
+
+    // Legend, using words as well as colour
+    const legend = document.getElementById('legend');
+    legend.innerHTML = '';
+    GENOS.forEach(g => {
+      if (!pct[g]) return;
+      const li = document.createElement('li');
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = 'var(' + INFO[g].color + ')';
+      const t = document.createElement('span');
+      t.textContent = pct[g] + '%  ' + INFO[g].label;
+      li.append(dot, t);
+      legend.appendChild(li);
+    });
+
+    // Gentle advice
+    const adv = document.getElementById('advice');
+    adv.textContent = scd > 0
+      ? 'Nobody is to blame for the genes they carry. Genetic counselling can explain your options before and during pregnancy, and newborn screening and early care help children with sickle cell disease live well. Speak to a doctor or genetic counsellor.'
+      : 'Knowing your genotype before marriage and pregnancy is the best protection for the next generation. Share GenoCheck with someone who has not been tested yet.';
+  }
+
+  fillSelect('p1', 'AS');
+  fillSelect('p2', 'AS');
+  update();
+</script>
+</body>
+</html>
