@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learn and Unlearn | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b3202f">
+  <link rel="icon" href="icon.svg">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">SickleFix</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <ul class="links" id="links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="card.html">Emergency Card</a></li>
+      <li><a href="painlog.html">Companion</a></li>
+      <li><a href="genocheck.html">Know Your Genotype</a></li>
+      <li><a href="clinics.html">Find Care</a></li>
+      <li><a href="learn.html">Learn</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
+    </ul>
+  </nav>
+
+  <h1>Learn and Unlearn</h1>
+  <p class="note">A 3-minute lesson. Listen, then test yourself with the quiz.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">Listen: Understanding sickle cell</h2>
+    <audio controls preload="none" style="width:100%">
+      <source src="audio/lesson-en.mp3" type="audio/mpeg">
+      Your browser does not support audio.
+    </audio>
+    <button class="btn alt" id="saveOffline">Save audio for offline</button>
+<p class="note" id="offMsg"></p>
+    <details style="margin-top:14px">
+      <summary><b>Read the transcript</b></summary>
+      <p>Paste the full text of your recording here.</p>
+    </details>
+  </div>
+
+  <div class="card" style="margin-top:20px;text-align:center">
+    <p>Ready to test what you heard?</p>
+    <a class="btn" href="quiz.html">Take the Myth or Fact quiz</a>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>
+  document.getElementById('saveOffline').onclick = async () => {
+    const msg = document.getElementById('offMsg');
+    msg.textContent = 'Saving...';
+    try {
+      const res = await fetch('/audio/lesson-en.mp3');
+      if (!res.ok) throw new Error();
+      await res.arrayBuffer();
+      msg.textContent = 'Saved. You can now listen without data.';
+    } catch (e) {
+      msg.textContent = 'Could not save. Check your connection and try again.';
+    }
+  };
+</script>
+</body>
+</html>
