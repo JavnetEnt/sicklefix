@@ -1,0 +1,12 @@
+{
+  "name": "SickleFix",
+  "short_name": "SickleFix",
+  "description": "Sickle cell awareness, emergency card and care directory for Nigeria",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#fff8f5",
+  "theme_color": "#b3202f",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

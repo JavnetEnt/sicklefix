@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find Care | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b3202f">
+<link rel="icon" href="icon.svg">
+  <style>
+    .filters { display: grid; gap: 12px; margin-bottom: 18px; }
+    @media (min-width: 700px) { .filters { grid-template-columns: 1fr 2fr; } }
+    .item { margin-bottom: 14px; }
+    .item h3 { margin: 0 0 4px; color: var(--red); }
+    .tag { display: inline-block; background: var(--soft); color: var(--red); font: 700 12px system-ui, sans-serif; padding: 3px 10px; border-radius: 99px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav">
+  <a class="brand" href="index.html">SickleFix</a>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+ <ul class="links" id="links">
+  <li><a href="index.html">Home</a></li>
+  <li><a href="card.html">Emergency Card</a></li>
+  <li><a href="index.html#genotype">Know Your Genotype</a></li>
+  <li><a href="clinics.html">Find Care</a></li>
+  <li><a href="quiz.html">Quiz</a></li>
+</ul>
+</nav>
+
+
+  <h1>Find care and support</h1>
+  <p class="note">Always call ahead to confirm clinic days and services. In an emergency, go to the nearest hospital.</p>
+
+  <div class="filters">
+    <label>State
+      <select id="state"><option value="">All states</option></select>
+    </label>
+    <label>Search
+      <input id="q" placeholder="Hospital, city or type">
+    </label>
+  </div>
+
+  <p class="note" id="count"></p>
+  <div class="cols" id="list"></div>
+</div>
+
+<script>
+  async function loadStates() {
+    const res = await fetch('/api/states');
+    const states = await res.json();
+    const sel = document.getElementById('state');
+    states.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s;
+      o.textContent = s;
+      sel.appendChild(o);
+    });
+  }
+
+  async function loadClinics() {
+    const state = document.getElementById('state').value;
+    const q = document.getElementById('q').value.trim();
+    const params = new URLSearchParams();
+    if (state) params.set('state', state);
+    if (q) params.set('q', q);
+
+    const res = await fetch('/api/clinics?' + params.toString());
+    const clinics = await res.json();
+
+    document.getElementById('count').textContent = clinics.length + ' result(s)';
+    const box = document.getElementById('list');
+    box.innerHTML = '';
+
+    if (clinics.length === 0) {
+      box.textContent = 'Nothing found. Try another state or search word.';
+      return;
+    }
+
+    clinics.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'card item';
+
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = c.type;
+
+      const h = document.createElement('h3');
+      h.textContent = c.name;
+
+      const loc = document.createElement('div');
+      loc.textContent = c.city + ', ' + c.state;
+
+      const note = document.createElement('p');
+      note.className = 'note';
+      note.textContent = c.notes;
+
+      card.append(tag, h, loc, note);
+
+      if (c.phone) {
+        const call = document.createElement('a');
+        call.className = 'btn';
+        call.textContent = 'Call';
+        call.href = 'tel:' + c.phone.replace(/[^0-9+]/g, '');
+        card.appendChild(call);
+      }
+      box.appendChild(card);
+    });
+  }
+
+  document.getElementById('state').onchange = loadClinics;
+  document.getElementById('q').oninput = loadClinics;
+
+  loadStates();
+  loadClinics();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

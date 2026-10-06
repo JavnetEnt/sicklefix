@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SickleFix: Sickle Cell Awareness in Nigeria</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b3202f">
+<link rel="icon" href="icon.svg">
+<style>
+:root{--bg:#fff8f5;--card:#fff;--ink:#2a1517;--mut:#6b5558;--red:#b3202f;--soft:#fde7e4;--line:#f0d5d1;--ok:#1d7a4f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a0f10;--card:#2a1819;--ink:#f7e9e7;--mut:#c4a9a6;--red:#ff6b78;--soft:#3a1d20;--line:#4a2a2d;--ok:#5fd29a}}
+:root[data-theme="dark"]{--bg:#1a0f10;--card:#2a1819;--ink:#f7e9e7;--mut:#c4a9a6;--red:#ff6b78;--soft:#3a1d20;--line:#4a2a2d;--ok:#5fd29a}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Georgia,'Times New Roman',serif}
+main{max-width:980px;margin:0 auto;padding:0 20px 60px}
+h1,h2,h3,button,label,.tag{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+header{padding:48px 0 28px;text-align:center}
+.tag{display:inline-block;background:var(--soft);color:var(--red);font-size:13px;font-weight:700;letter-spacing:.06em;padding:5px 12px;border-radius:99px}
+h1{font-size:2.3rem;line-height:1.15;margin:16px 0 10px}
+h2{font-size:1.5rem;margin:0 0 8px;color:var(--red)}
+section{margin-top:34px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.lead{color:var(--mut)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.stat{background:var(--soft);border-radius:14px;padding:14px;font-family:system-ui,sans-serif;font-size:14px}
+.stat b{display:block;font-size:1.5rem;color:var(--red)}
+input[type=range]{width:100%;accent-color:var(--red);margin:14px 0}
+.level{font:700 3rem/1 system-ui,sans-serif;color:var(--red)}
+#feel{min-height:7.5em;transition:background .3s}
+.meter{height:10px;border-radius:9px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--red);width:0;transition:width .3s}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cell{text-align:center}
+svg{max-width:100%}
+ul{padding-left:20px}li{margin:6px 0}
+.say{border-left:4px solid var(--ok);padding-left:12px;margin:8px 0}
+.dont{border-left:4px solid var(--red);padding-left:12px;margin:8px 0;color:var(--mut)}
+.alert{background:var(--soft);border:2px solid var(--red);border-radius:16px;padding:18px}
+select,button{font:600 16px system-ui,sans-serif;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+button{background:var(--red);color:#fff;border:0;cursor:pointer}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+#res{font-family:system-ui,sans-serif;margin-top:10px}
+.bar{display:flex;height:34px;border-radius:9px;overflow:hidden;margin:6px 0;font-size:13px;color:#fff;font-weight:700}
+.bar span{display:flex;align-items:center;justify-content:center}
+.quote{font-size:1.25rem;font-style:italic;text-align:center;padding:10px}
+small,.note{color:var(--mut);font-size:14px;font-family:system-ui,sans-serif}
+footer{margin-top:40px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+    <nav class="nav">
+  <a class="brand" href="index.html">SickleFix</a>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <ul class="links" id="links">
+  <li><a href="index.html">Home</a></li>
+  <li><a href="card.html">Emergency Card</a></li>
+  <li><a href="index.html#genotype">Know Your Genotype</a></li>
+  <li><a href="clinics.html">Find Care</a></li>
+  <li><a href="quiz.html">Quiz</a></li>
+</ul>
+</nav>
+
+<header>
+<span class="tag">SICKLE CELL IN NIGERIA</span>
+<p class="lead">Nigeria has more people living with sickle cell disease than any other country. Behind the numbers are people fighting an invisible battle. Let's understand it, together.</p>
+<div class="stats">
+<div class="stat"><b>~1 in 4</b>Nigerians carry the sickle cell trait (AS)</div>
+<div class="stat"><b>~150,000</b>babies born with SCD in Nigeria each year (estimates)</div>
+</div>
+</header>
+
+<section>
+<h2>1. Feel the crisis</h2>
+<p class="lead">A sickle cell "crisis" is not just a bad headache or a sore leg. Slide to see what warriors describe as pain grows.</p>
+<div class="card">
+<div class="level" id="lv">1</div>
+<div class="meter"><i id="mt"></i></div>
+<input type="range" id="sl" min="1" max="10" value="1" aria-label="Pain level">
+<div class="card" id="feel" style="background:var(--soft)"></div>
+</div>
+<p class="note">These descriptions are drawn from how many warriors describe their experience. Everyone's crisis is different.</p>
+</section>
+
+<section>
+<h2>2. What is happening inside the body?</h2>
+<p>Healthy red blood cells are round and soft. They glide through the smallest blood vessels carrying oxygen. In sickle cell disease, the haemoglobin is faulty, so cells can turn stiff and curved like a sickle. They stick together and block blood flow. Tissue is starved of oxygen, and that causes sudden, severe pain and can damage organs over time.</p>
+<div class="card pair">
+<div class="cell"><svg viewBox="0 0 160 90" role="img" aria-label="Round healthy cells"><g fill="#c0262f"><circle cx="30" cy="30" r="16"/><circle cx="75" cy="55" r="16"/><circle cx="120" cy="28" r="16"/><circle cx="130" cy="68" r="12"/></g><g fill="#fff" opacity=".35"><circle cx="30" cy="30" r="6"/><circle cx="75" cy="55" r="6"/><circle cx="120" cy="28" r="6"/></g></svg><br><b>Healthy cells</b><br><small>flow freely</small></div>
+<div class="cell"><svg viewBox="0 0 160 90" role="img" aria-label="Sickle shaped cells blocking a vessel"><g fill="#7a1220"><path d="M15 55 Q35 15 60 50 Q35 35 15 55Z"/><path d="M55 60 Q80 20 105 55 Q80 40 55 60Z"/><path d="M92 40 Q118 10 140 45 Q118 30 92 40Z"/><path d="M70 30 Q90 5 110 25 Q90 18 70 30Z"/></g><line x1="145" y1="10" x2="145" y2="80" stroke="#999" stroke-width="3" stroke-dasharray="4"/></svg><br><b>Sickled cells</b><br><small>get stuck, block flow</small></div>
+</div>
+</section>
+
+<section>
+<h2>3. Common triggers</h2>
+<ul>
+<li>Dehydration and not drinking enough water</li>
+<li>Cold, harmattan dryness, or sudden temperature changes</li>
+<li>Infections, including malaria</li>
+<li>Extreme stress, exhaustion or overexertion</li>
+<li>Low oxygen, such as high altitude</li>
+</ul>
+<p class="note">Sometimes a crisis comes with no clear cause at all.</p>
+</section>
+
+<section>
+<h2>4. When it is an emergency</h2>
+<div class="alert">
+<b style="font-family:system-ui,sans-serif">Go to a hospital immediately if a warrior has:</b>
+<ul>
+<li>Fever (38&deg;C or higher)</li>
+<li>Chest pain or difficulty breathing</li>
+<li>Pain not relieved by usual medicine</li>
+<li>Sudden weakness, trouble speaking, or severe headache</li>
+<li>Swollen, very painful belly, or sudden severe paleness or yellowing of the eyes</li>
+<li>A painful erection lasting more than 2 to 4 hours</li>
+</ul>
+<small>Don't wait. Delay can be dangerous. Take the warrior's medical records or emergency card if you have one.</small>
+</div>
+</section>
+
+<section>
+<h2>5. How to support a warrior</h2>
+<div class="say">"I believe you. What do you need right now?"</div>
+<div class="say">"Let me get you water, a warm blanket, or take you to the hospital."</div>
+<div class="say">"Take the time you need. I've got this."</div>
+<div class="dont">"But you look fine." Pain here is often invisible.</div>
+<div class="dont">"It's just spiritual/it's your own fault." SCD is a genetic condition, not a curse.</div>
+<div class="dont">"Stop pretending to get attention." Crisis pain is real, and often undertreated.</div>
+</section>
+
+<section id="genotype">
+<h2>6. Know your genotype</h2>
+<p>Sickle cell is inherited. A child gets one haemoglobin gene from each parent. See what couples could pass on.</p>
+<div class="card">
+<div class="row">
+<label>Partner 1 <select id="p1"><option>AA</option><option>AS</option><option>SS</option></select></label>
+<label>Partner 2 <select id="p2"><option>AA</option><option selected>AS</option><option>SS</option></select></label>
+<button id="go">Check</button>
+</div>
+<div id="res"></div>
+<small>Other genotypes (AC, SC) exist too. A genotype test at a hospital or lab, ideally before marriage and in pregnancy, gives you the real answer. Ask a doctor or genetic counsellor about your result.</small>
+</div>
+</section>
+
+<section>
+<h2>7. For every warrior</h2>
+<div class="card">
+<div class="quote" id="q"></div>
+<div class="row" style="justify-content:center"><button id="nq">Another message</button></div>
+<ul>
+<li>Stay hydrated, dress warm, and rest enough</li>
+<li>Take prescribed medicines and keep clinic appointments</li>
+<li>Talk about how you feel; your mental health matters</li>
+<li>Find your people; you are not alone</li>
+</ul>
+</div>
+</section>
+<section>
+<h2>Find care near you</h2>
+<div class="card" style="text-align:center">
+  <p>Look up hospitals and support organisations by state.</p>
+  <a href="clinics.html" style="display:inline-block;background:var(--red);color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font:600 16px system-ui,sans-serif">Find a clinic</a>
+</div>
+</section>
+<section>
+<h2>Make your emergency card</h2>
+<div class="card" style="text-align:center">
+  <p>Warriors: keep your genotype, medicines and emergency contact ready for when it matters most.</p>
+  <a href="card.html" style="display:inline-block;background:var(--red);color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font:600 16px system-ui,sans-serif">Create my card</a>
+</div>
+</section>
+
+<section>
+<h2>8. Test what you've learned</h2>
+<div class="card" style="text-align:center">
+  <p>Think you know the myths from the facts? Take the 2-minute quiz and share your score.</p>
+  <a href="quiz.html" style="display:inline-block;background:var(--red);color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font:600 16px system-ui,sans-serif">Take the Myth or Fact quiz</a>
+</div>
+</section>
+
+
+<footer>
+<p><b>SickleFix</b> &middot; World Sickle Cell Day is June 19.</p>
+<small>This app is for awareness and is not medical advice. Please consult a doctor for diagnosis and treatment.</small>
+</footer>
+</main>
+<script>
+var D=[
+["Mild","A dull ache you can mostly ignore. For many warriors this is the first warning: stay alert and drink water."],
+["Uncomfortable","Joints or bones feel heavy and tight. Concentrating on class or work gets harder."],
+["Distracting","A steady throbbing ache. Conversations feel far away."],
+["Hard to ignore","Pain spreads. Sitting or lying down no longer helps. Sleep is difficult."],
+["Wearing","Every movement hurts. Warriors may start crying quietly or going silent."],
+["Severe","Deep, relentless pain in the back, chest, arms or legs. Home medicine may not be enough."],
+["Intense","It feels like bones are being crushed or squeezed. Breathing may hurt. Hospital time."],
+["Overwhelming","Hard to talk or think. Many warriors say they cannot describe it; it takes over everything."],
+["Crushing","Screaming or shaking. Tears, fear, and exhaustion. Needs urgent medical care."],
+["Worst imaginable","Pain that many warriors say is the worst they can imagine, lasting hours or days. It is an emergency."]];
+var sl=document.getElementById('sl');
+function upd(){var v=+sl.value;document.getElementById('lv').textContent=v;document.getElementById('mt').style.width=v*10+'%';
+document.getElementById('feel').innerHTML='<b style="font-family:system-ui,sans-serif">'+D[v-1][0]+'</b><br>'+D[v-1][1]}
+sl.oninput=upd;upd();
+function pair(a,b){var g=a.split('').concat();var out={};
+a.split('').forEach(function(x){b.split('').forEach(function(y){var k=[x,y].sort().join('');out[k]=(out[k]||0)+25})});return out}
+document.getElementById('go').onclick=function(){
+var a=document.getElementById('p1').value,b=document.getElementById('p2').value,o=pair(a,b);
+var C={AA:'#1d7a4f',AS:'#d98a1f',SS:'#b3202f'},h='<div class="bar">';
+['AA','AS','SS'].forEach(function(k){if(o[k])h+='<span style="width:'+o[k]+'%;background:'+C[k]+'">'+k+' '+o[k]+'%</span>'});
+h+='</div><p>Chance for each child:</p>';
+if(o.SS)h+='<p><b>Each pregnancy has a '+o.SS+'% chance of a child with sickle cell disease (SS).</b> Genetic counselling is strongly recommended before deciding.</p>';
+else if(o.AS&&a!=='AA'||o.AS&&b!=='AA')h+='<p>No chance of SS, but children may carry the trait (AS).</p>';
+else h+='<p>All children will be AA.</p>';
+document.getElementById('res').innerHTML=h};
+var Q=["You are more than your pain. You are strong, worthy and loved.","Rest is not weakness. It is how warriors recharge.","Your story matters. Your voice can change how people see SCD.","Ask for help early. That is wisdom, not weakness.","Some days you survive; some days you shine. Both count.","You were not born to be pitied. You were born to be understood."];
+var qi=0;function showq(){document.getElementById('q').textContent='\u201C'+Q[qi]+'\u201D'}
+document.getElementById('nq').onclick=function(){qi=(qi+1)%Q.length;showq()};showq();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

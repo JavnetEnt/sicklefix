@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "name": "University College Hospital (UCH), Ibadan",
+    "state": "Oyo",
+    "city": "Ibadan",
+    "type": "Teaching hospital",
+    "phone": "",
+    "notes": "Sample entry. Confirm sickle cell clinic days and contact before sharing."
+  },
+  {
+    "id": 2,
+    "name": "Lagos University Teaching Hospital (LUTH)",
+    "state": "Lagos",
+    "city": "Idi-Araba",
+    "type": "Teaching hospital",
+    "phone": "",
+    "notes": "Sample entry. Confirm details before sharing."
+  },
+  {
+    "id": 3,
+    "name": "Sickle Cell Foundation Nigeria",
+    "state": "Lagos",
+    "city": "Lagos",
+    "type": "Support organisation",
+    "phone": "",
+    "notes": "Sample entry. Confirm details before sharing."
+  },
+  {
+    "id": 4,
+    "name": "Aminu Kano Teaching Hospital",
+    "state": "Kano",
+    "city": "Kano",
+    "type": "Teaching hospital",
+    "phone": "",
+    "notes": "Sample entry. Confirm details before sharing."
+  },
+  {
+    "id": 5,
+    "name": "University of Nigeria Teaching Hospital (UNTH)",
+    "state": "Enugu",
+    "city": "Ituku-Ozalla",
+    "type": "Teaching hospital",
+    "phone": "",
+    "notes": "Sample entry. Confirm details before sharing."
+  },
+  {
+    "id": 6,
+    "name": "National Hospital Abuja",
+    "state": "FCT",
+    "city": "Abuja",
+    "type": "Federal hospital",
+    "phone": "",
+    "notes": "Sample entry. Confirm details before sharing."
+  }
+]

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Emergency Card | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b3202f">
+<link rel="icon" href="icon.svg">
+  <style>
+    .row { margin: 8px 0; }
+    .row b { display: block; font-size: 13px; color: var(--mut); text-transform: uppercase; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav noprint">
+  <a class="brand" href="index.html">SickleFix</a>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+ <ul class="links" id="links">
+  <li><a href="index.html">Home</a></li>
+  <li><a href="card.html">Emergency Card</a></li>
+  <li><a href="index.html#genotype">Know Your Genotype</a></li>
+  <li><a href="clinics.html">Find Care</a></li>
+  <li><a href="quiz.html">Quiz</a></li>
+</ul>
+</nav>
+
+  <div class="noprint">
+    <h1>My Emergency Card</h1>
+    <p class="note">Your details are saved only on this device. They are never sent anywhere.</p>
+
+    <label>Full name <input id="name"></label>
+    <label>Genotype
+      <select id="genotype">
+        <option value="">Choose</option>
+        <option>SS</option><option>SC</option><option>Other</option>
+      </select>
+    </label>
+    <label>Blood group <input id="blood" placeholder="e.g. O+"></label>
+    <label>Medications <textarea id="meds" rows="2" placeholder="e.g. folic acid, hydroxyurea"></textarea></label>
+    <label>Allergies <input id="allergies"></label>
+    <label>Hospital / doctor <input id="hospital"></label>
+    <label>Emergency contact name <input id="contactName"></label>
+    <label>Emergency contact phone <input id="contactPhone" type="tel"></label>
+    <label>Special instructions from my doctor <textarea id="notes" rows="2"></textarea></label>
+
+    <button id="save">Save card</button>
+    <button id="print">Print / Save as PDF</button>
+    <button id="clear">Clear</button>
+    <p id="msg" class="note"></p>
+  </div>
+
+  <div id="card">
+    <h2>Medical Emergency Card</h2>
+    <div>I live with <b>sickle cell disease</b>.</div>
+    <div class="row"><b>Name</b><span id="c_name"></span></div>
+    <div class="row"><b>Genotype</b><span id="c_genotype"></span></div>
+    <div class="row"><b>Blood group</b><span id="c_blood"></span></div>
+    <div class="row"><b>Medications</b><span id="c_meds"></span></div>
+    <div class="row"><b>Allergies</b><span id="c_allergies"></span></div>
+    <div class="row"><b>Hospital / doctor</b><span id="c_hospital"></span></div>
+    <div class="row"><b>Emergency contact</b><span id="c_contactName"></span> &middot; <span id="c_contactPhone"></span></div>
+    <div class="row"><b>Doctor's instructions</b><span id="c_notes"></span></div>
+    <div class="alert">Fever, chest pain, trouble breathing, or severe pain is an emergency. Please get me medical help quickly and call my emergency contact.</div>
+  </div>
+
+  <script>
+    const fields = ['name','genotype','blood','meds','allergies','hospital','contactName','contactPhone','notes'];
+
+    function render(data) {
+      fields.forEach(f => {
+        document.getElementById('c_' + f).textContent = data[f] || '-';
+      });
+    }
+
+    function load() {
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem('emergencyCard') || '{}');
+      } catch (e) {}
+      fields.forEach(f => {
+        document.getElementById(f).value = saved[f] || '';
+      });
+      render(saved);
+    }
+
+    document.getElementById('save').onclick = () => {
+      const data = {};
+      fields.forEach(f => data[f] = document.getElementById(f).value.trim());
+      localStorage.setItem('emergencyCard', JSON.stringify(data));
+      render(data);
+      document.getElementById('msg').textContent = 'Saved on this device.';
+    };
+
+    document.getElementById('print').onclick = () => window.print();
+
+    document.getElementById('clear').onclick = () => {
+      localStorage.removeItem('emergencyCard');
+      load();
+      document.getElementById('msg').textContent = 'Card cleared.';
+    };
+
+    load();
+  </script>
+  <script src="nav.js"></script>
+</body>
+</html>

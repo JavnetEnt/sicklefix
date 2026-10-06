@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Myth or Fact? | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="index.html">SickleFix</a>
+    <a class="back" href="index.html">&larr; Home</a>
+  </div>
+
+  <h1>Myth or Fact?</h1>
+  <p class="note" id="progress"></p>
+  <div class="card">
+    <h2 id="question" style="margin-top:0"></h2>
+    <div id="options"></div>
+    <p id="feedback"></p>
+    <button class="btn alt" id="next" hidden>Next</button>
+  </div>
+</div>
+
+<script>
+  let questions = [];
+  let current = 0;
+  let score = 0;
+
+  async function start() {
+    const res = await fetch('/api/questions');
+    questions = await res.json();
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const q = questions[current];
+    document.getElementById('progress').textContent = 'Question ' + (current + 1) + ' of ' + questions.length;
+    document.getElementById('question').textContent = q.text;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('next').hidden = true;
+
+    const box = document.getElementById('options');
+    box.innerHTML = '';
+    q.options.forEach((label, index) => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.textContent = label;
+      b.onclick = () => answer(q.id, index);
+      box.appendChild(b);
+    });
+  }
+
+  async function answer(id, choice) {
+    const res = await fetch('/api/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, choice })
+    });
+    const data = await res.json();
+    if (data.correct) score++;
+    const fb = document.getElementById('feedback');
+    fb.className = data.correct ? 'good' : 'bad';
+    fb.textContent = (data.correct ? 'Correct! ' : 'Not quite. ') + data.explain;
+    document.querySelectorAll('#options button').forEach(b => b.disabled = true);
+    document.getElementById('next').hidden = false;
+  }
+
+  document.getElementById('next').onclick = () => {
+    current++;
+    if (current < questions.length) {
+      showQuestion();
+    } else {
+      document.getElementById('question').textContent = 'You scored ' + score + ' out of ' + questions.length;
+      document.getElementById('options').innerHTML = '';
+      document.getElementById('progress').textContent = 'Done!';
+      document.getElementById('feedback').className = '';
+      document.getElementById('feedback').textContent = 'Share this quiz with a friend. Knowledge saves lives.';
+      document.getElementById('next').hidden = true;
+    }
+  };
+
+  start();
+</script>
+</body>
+</html>
