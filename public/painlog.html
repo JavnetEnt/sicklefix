@@ -28,7 +28,8 @@
 </head>
 <body>
 <div class="wrap">
-  <nav class="nav">
+    <div class="card noprint"></div>
+  <nav class="nav noprint">
     <a class="brand" href="index.html">SickleFix</a>
     <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <ul class="links" id="links">
@@ -41,7 +42,15 @@
     </ul>
   </nav>
 
-  <h1>My Pain Log</h1>
+  <h1>
+    <div class="printonly">
+  <p id="printWho"></p>
+</div>
+    <div class="tabs noprint">
+  <a href="painlog.html" aria-current="page">Pain Log</a>
+  <a href="water.html">Water</a>
+</div>
+  </h1>
   <p class="note">Your log is saved only on this device. It is never sent anywhere. Showing your doctor a record of your crises can help them treat you better.</p>
 
   <div class="card">
@@ -83,7 +92,9 @@
   <div class="card" style="margin-top:20px">
     <h2 style="margin-top:0">History</h2>
     <div id="history"></div>
-    <button class="btn alt" id="clearAll">Delete all entries</button>
+    <button class="btn noprint" id="csv">Download for my doctor (CSV)</button>
+<button class="btn alt noprint" id="printLog">Print or save as PDF</button>
+<button class="btn alt noprint" id="clearAll">Delete all entries</button>
   </div>
 </div>
 
@@ -269,7 +280,41 @@
       render();
     }
   };
+function csvCell(v) {
+  let s = String(v == null ? '' : v);
+  if (/^[=+\-@]/.test(s)) s = "'" + s;   // stops spreadsheet formulas from running
+  return '"' + s.replace(/"/g, '""') + '"';
+}
 
+document.getElementById('csv').onclick = () => {
+  const list = loadLog().sort((a, b) => a.when.localeCompare(b.when));
+  if (!list.length) { alert('No entries to export yet.'); return; }
+
+  const rows = [['Date and time', 'Pain level', 'Body areas', 'Triggers', 'Notes']];
+  list.forEach(e => rows.push([
+    e.when.replace('T', ' '), e.level, e.areas.join('; '), e.triggers.join('; '), e.notes
+  ]));
+
+  const csv = '\uFEFF' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sicklefix-pain-log.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('printLog').onclick = () => {
+  let card = {};
+  try { card = JSON.parse(localStorage.getItem('emergencyCard') || '{}'); } catch (e) {}
+  document.getElementById('printWho').textContent =
+    'SickleFix pain log for ' + (card.name || 'a sickle cell warrior') +
+    (card.genotype ? ' (genotype ' + card.genotype + ')' : '') +
+    '. Printed ' + new Date().toLocaleDateString();
+  window.print();
+};
   makeChips('areas', AREAS, 'area');
   makeChips('triggers', TRIGGERS, 'trigger');
   document.getElementById('when').value = nowLocal();

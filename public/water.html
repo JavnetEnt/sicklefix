@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Water Tracker | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b3202f">
+  <link rel="icon" href="icon.svg">
+  <style>
+    .glasses { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+    .glass { width: 44px; height: 54px; border-radius: 6px 6px 14px 14px; border: 2px solid var(--line); background: var(--card); }
+    .glass.full { background: #2f8fd8; border-color: #2f8fd8; }
+    .big { font: 800 2.4rem/1 system-ui, sans-serif; color: var(--red); }
+    .week { display: flex; align-items: flex-end; gap: 8px; height: 140px; margin-top: 12px; }
+    .col { flex: 1; text-align: center; font: 12px system-ui, sans-serif; color: var(--mut); }
+    .col i { display: block; border-radius: 6px 6px 0 0; background: var(--line); min-height: 4px; }
+    .col i.hit { background: var(--ok); }
+    .row2 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .row2 input { width: 90px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="index.html">SickleFix</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <ul class="links" id="links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="card.html">Emergency Card</a></li>
+      <li><a href="painlog.html">Companion</a></li>
+      <li><a href="index.html#genotype">Know Your Genotype</a></li>
+      <li><a href="clinics.html">Find Care</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
+    </ul>
+  </nav>
+
+  <h1>Water Tracker</h1>
+  <div class="tabs">
+    <a href="painlog.html">Pain Log</a>
+    <a href="water.html" aria-current="page">Water</a>
+  </div>
+  <p class="note">Staying hydrated helps lower the risk of a crisis. Saved only on this device.</p>
+
+  <div class="card">
+    <div class="big"><span id="count">0</span> / <span id="goalShow">8</span> glasses</div>
+    <p id="status" class="note"></p>
+    <div class="glasses" id="glasses"></div>
+    <button class="btn" id="add">+ I drank a glass</button>
+    <button class="btn alt" id="minus">Undo one</button>
+    <p class="note" id="last"></p>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2 style="margin-top:0">Last 7 days</h2>
+    <div class="week" id="week"></div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2 style="margin-top:0">My daily goal</h2>
+    <div class="row2">
+      <input type="number" id="goal" min="1" max="20" aria-label="Glasses per day">
+      <span>glasses a day</span>
+      <button class="btn alt" id="setGoal">Save goal</button>
+    </div>
+    <p class="note">One glass is about 250 ml. Your doctor may suggest a different amount for you, so ask them.</p>
+  </div>
+</div>
+
+<script src="nav.js"></script>
+<script>
+  const LOG = 'waterLog', GOAL = 'waterGoal';
+
+  function dayKey(offset) {
+    const t = Date.now() - (offset || 0) * 86400000 - new Date().getTimezoneOffset() * 60000;
+    return new Date(t).toISOString().slice(0, 10);
+  }
+  function getLog() { try { return JSON.parse(localStorage.getItem(LOG) || '{}'); } catch (e) { return {}; } }
+  function setLog(o) { localStorage.setItem(LOG, JSON.stringify(o)); }
+  function getGoal() { return +localStorage.getItem(GOAL) || 8; }
+
+  function change(delta) {
+    const log = getLog();
+    const k = dayKey(0);
+    const day = log[k] || { count: 0, last: null };
+    day.count = Math.max(0, day.count + delta);
+    if (delta > 0) day.last = Date.now();
+    log[k] = day;
+    setLog(log);
+    render();
+  }
+
+  function render() {
+    const goal = getGoal();
+    const log = getLog();
+    const today = log[dayKey(0)] || { count: 0, last: null };
+
+    document.getElementById('count').textContent = today.count;
+    document.getElementById('goalShow').textContent = goal;
+    document.getElementById('goal').value = goal;
+
+    const status = document.getElementById('status');
+    status.textContent = today.count >= goal
+      ? 'Goal reached. Well done!'
+      : (goal - today.count) + ' more to reach today\u2019s goal.';
+
+    const box = document.getElementById('glasses');
+    box.innerHTML = '';
+    for (let i = 0; i < Math.max(goal, today.count); i++) {
+      const g = document.createElement('div');
+      g.className = 'glass' + (i < today.count ? ' full' : '');
+      box.appendChild(g);
+    }
+
+    updateLast(today.last);
+    renderWeek(log, goal);
+  }
+
+  function updateLast(ts) {
+    const el = document.getElementById('last');
+    if (!ts) { el.textContent = ''; return; }
+    const mins = Math.round((Date.now() - ts) / 60000);
+    el.textContent = mins < 1 ? 'Last glass: just now'
+      : mins < 60 ? 'Last glass: ' + mins + ' min ago'
+      : 'Last glass: ' + Math.floor(mins / 60) + ' h ago. Time for water?';
+  }
+
+  function renderWeek(log, goal) {
+    const box = document.getElementById('week');
+    box.innerHTML = '';
+    const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    for (let i = 6; i >= 0; i--) {
+      const k = dayKey(i);
+      const n = (log[k] || { count: 0 }).count;
+      const col = document.createElement('div');
+      col.className = 'col';
+      const bar = document.createElement('i');
+      bar.style.height = Math.min(100, (n / Math.max(goal, 1)) * 100) + 'px';
+      if (n >= goal) bar.className = 'hit';
+      const lab = document.createElement('div');
+      lab.textContent = names[new Date(k + 'T12:00:00').getDay()] + ' ' + n;
+      col.append(bar, lab);
+      box.appendChild(col);
+    }
+  }
+
+  document.getElementById('add').onclick = () => change(1);
+  document.getElementById('minus').onclick = () => change(-1);
+  document.getElementById('setGoal').onclick = () => {
+    const v = Math.min(20, Math.max(1, +document.getElementById('goal').value || 8));
+    localStorage.setItem(GOAL, v);
+    render();
+  };
+
+  render();
+  setInterval(() => updateLast((getLog()[dayKey(0)] || {}).last), 60000);
+</script>
+</body>
+</html>
