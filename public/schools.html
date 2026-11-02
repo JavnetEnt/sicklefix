@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>For Schools and Campuses | SickleFix</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b3202f">
+  <link rel="icon" href="icon.svg">
+  <style>
+    .check label { display: flex; align-items: flex-start; gap: 10px; font-weight: 500; margin: 10px 0; }
+    .check input { width: 22px; min-height: 0; margin: 3px 0 0; flex: none; accent-color: var(--red); }
+    .steps { counter-reset: s; padding: 0; list-style: none; }
+    .steps li { counter-increment: s; position: relative; padding-left: 46px; margin: 14px 0; max-width: none; }
+    .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--red); color: #fff; font: 700 15px/32px system-ui, sans-serif; text-align: center; }
+    .two { display: grid; gap: 18px; }
+    @media (min-width: 800px) { .two { grid-template-columns: 1fr 1fr; } }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .facts div { background: var(--soft); border-radius: 12px; padding: 12px; text-align: center; font: 14px/1.35 system-ui, sans-serif; }
+    .facts b { display: block; font-size: 1.6rem; color: var(--red); }
+    h2.sec { margin-top: 34px; }
+    @media print { .nav, .season, .noprint { display: none !important; } body { font-size: 12pt; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav noprint">
+    <a class="brand" href="index.html">SickleFix</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <ul class="links" id="links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="card.html">Emergency Card</a></li>
+      <li><a href="painlog.html">Companion</a></li>
+      <li><a href="genocheck.html">Know Your Genotype</a></li>
+      <li><a href="clinics.html">Find Care</a></li>
+      <li><a href="learn.html">Learn</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
+      <li><a href="schools.html">For Schools</a></li>
+    </ul>
+  </nav>
+
+  <h1>For Schools and Campuses</h1>
+  <p class="lead">A guide for lecturers, student leaders and campus clinics: how to support students with sickle cell, and how to run an awareness day that leads to real testing.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">Why it matters here</h2>
+    <p>Students asked for this. In a survey of 36 YABATECH students by Pamo, nearly all said a visual awareness campaign would encourage students to know their genotype. They asked for seminars with free testing, better support for classmates who live with sickle cell, and to be treated as normal, not as fragile or outcast.</p>
+    <div class="facts">
+      <div><b>94%</b>said a visual campaign would help</div>
+      <div><b>1 in 5</b>did not know their genotype</div>
+    </div>
+    <p class="note">A small survey and not a full picture of the school. Shared with the family&rsquo;s blessing, and used only as group results.</p>
+  </div>
+
+  <h2 class="sec">1. Supporting a student with sickle cell</h2>
+  <div class="two">
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--red)">Everyday adjustments</h3>
+      <ul>
+        <li>Let them keep a water bottle and take toilet breaks without asking twice</li>
+        <li>Seat them away from cold drafts, fans and strong air conditioning</li>
+        <li>Avoid forcing hard exercise. Let them rest when tired</li>
+        <li>Excuse absences for crises and clinic appointments, with a doctor&rsquo;s note where possible</li>
+        <li>Allow make-up tests and flexible deadlines after a crisis</li>
+        <li>Offer a quiet place to rest during the day</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--red)">Respect and privacy</h3>
+      <ul>
+        <li>Believe them. Pain is often invisible</li>
+        <li>Ask the student what they need, and don&rsquo;t assume</li>
+        <li>Keep their condition private. Don&rsquo;t share it with classmates or staff who don&rsquo;t need to know without their permission</li>
+        <li>Treat them like any other student. They are capable, not fragile</li>
+        <li>Name one staff member they can go to</li>
+        <li>Never joke about their illness or call it an excuse</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="sec">2. If a student is in a crisis at school</h2>
+  <div class="alert">
+    <b>Call for medical help and take the student to a hospital straight away if there is:</b>
+    <ul>
+      <li>Fever (38&deg;C or higher)</li>
+      <li>Chest pain or trouble breathing</li>
+      <li>Severe pain that does not ease</li>
+      <li>Sudden weakness, trouble speaking or a severe headache</li>
+      <li>A swollen, very painful belly, or sudden paleness or yellow eyes</li>
+    </ul>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <ol class="steps">
+      <li><b>Stay with them</b> and stay calm. Don&rsquo;t leave them alone.</li>
+      <li><b>Give water</b> to drink if they are awake and able to swallow.</li>
+      <li><b>Keep them warm.</b> Avoid cold air and cold packs.</li>
+      <li><b>Call their emergency contact</b> (from their emergency card if they have one) and the campus clinic.</li>
+      <li><b>Don&rsquo;t give medicine</b> unless it is the student&rsquo;s own prescribed medicine and their family or doctor has agreed to it.</li>
+      <li><b>Go to a hospital</b> if any warning sign above appears, or if the pain is not easing. When in doubt, go.</li>
+    </ol>
+    <p class="note">Students can make their own <a href="card.html">emergency card</a> on SickleFix, with their genotype, medicines and contact.</p>
+  </div>
+
+  <h2 class="sec">3. Warrior-friendly campus checklist</h2>
+  <div class="card check">
+    <p class="note">Tick what your school already does. Print this page to share with your department or student affairs.</p>
+    <label><input type="checkbox"> A named staff contact for students with chronic illness</label>
+    <label><input type="checkbox"> A clear, written policy for excused absence and make-up exams during a crisis</label>
+    <label><input type="checkbox"> A rest space, and water available in classrooms and exam halls</label>
+    <label><input type="checkbox"> Staff know the emergency signs and who to call</label>
+    <label><input type="checkbox"> The campus clinic has a plan to transport a student to a hospital quickly</label>
+    <label><input type="checkbox"> Students&rsquo; health information is kept confidential</label>
+    <label><input type="checkbox"> Sickle cell is covered in orientation for new students</label>
+    <label><input type="checkbox"> An awareness and testing day happens at least once a year</label>
+    <label><input type="checkbox"> Testing is voluntary, private and comes with counselling</label>
+    <label><input type="checkbox"> Student leaders and warriors are invited to help plan, not just attend</label>
+    <button class="btn alt noprint" type="button" onclick="window.print()">Print this page</button>
+  </div>
+
+  <h2 class="sec">4. Run an awareness and testing day</h2>
+  <div class="card">
+    <ol class="steps">
+      <li><b>Get permission and partners.</b> Talk to student affairs, your department, the campus clinic and, if possible, a nearby hospital or laboratory that can do genotype testing.</li>
+      <li><b>Pick the timing.</b> Orientation week or a health week works well. Students also suggested the weeks before exams, when attention is high.</li>
+      <li><b>Open with a story.</b> Use Pamo&rsquo;s dream and play the <a href="learn.html">audio lesson</a>.</li>
+      <li><b>Test knowledge together.</b> Run the class <a href="school.html">Schools mode quiz</a> on a projector.</li>
+      <li><b>Invite a health worker to speak,</b> and a warrior only if they choose to, in their own words.</li>
+      <li><b>Offer testing,</b> with a private area, trained staff and counselling. Results are given only to the person tested.</li>
+      <li><b>Spread the message</b> with the poster and social graphics, and share <a href="index.html">SickleFix</a> on WhatsApp, Instagram, TikTok and X.</li>
+      <li><b>Follow up.</b> Ask for feedback, and plan the next event.</li>
+    </ol>
+    <div class="alert">
+      <b>Testing should always be voluntary and private.</b> Never announce results, rank students, or use a result to exclude anyone. A person who learns they are a carrier or have sickle cell should be offered counselling and support.
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;text-align:center">
+    <p style="margin:0 auto"><b>Help your campus know its genotype.</b></p>
+    <a class="btn" href="school.html">Start a class quiz</a>
+    <a class="btn alt" href="genocheck.html">Try GenoCheck</a>
+  </div>
+
+  <footer style="margin-top:36px">
+    <small>For awareness only and not medical advice. Ask a doctor or your campus clinic for guidance on individual students.</small><br>
+    <small>In loving memory of Pamo. Pamo dreamed of helping Nigeria understand sickle cell. SickleFix carries that dream forward.</small>
+  </footer>
+</div>
+<script src="nav.js"></script>
+</body>
+</html>

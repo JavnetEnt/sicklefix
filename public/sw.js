@@ -3,7 +3,8 @@ const FILES = [
   '/', '/index.html', '/card.html', '/clinics.html', '/quiz.html',
   '/style.css', '/nav.js', '/icon.svg', '/manifest.json',
   '/painlog.html',
-  '/learn.html'
+  '/learn.html',
+  '/schools.html'
 ];
 async function serveAudio(request) {
   const cache = await caches.open(CACHE);
