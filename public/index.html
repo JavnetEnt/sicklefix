@@ -214,37 +214,7 @@ footer{margin-top:40px;text-align:center}
 <small>In loving memory of Dada Pamilerin Michael. Pamo dreamed of helping Nigeria understand sickle cell. SickleFix carries that dream forward.</small>
 </footer>
 </main>
-<script>
-var D=[
-["Mild","A dull ache you can mostly ignore. For many warriors this is the first warning: stay alert and drink water."],
-["Uncomfortable","Joints or bones feel heavy and tight. Concentrating on class or work gets harder."],
-["Distracting","A steady throbbing ache. Conversations feel far away."],
-["Hard to ignore","Pain spreads. Sitting or lying down no longer helps. Sleep is difficult."],
-["Wearing","Every movement hurts. Warriors may start crying quietly or going silent."],
-["Severe","Deep, relentless pain in the back, chest, arms or legs. Home medicine may not be enough."],
-["Intense","It feels like bones are being crushed or squeezed. Breathing may hurt. Hospital time."],
-["Overwhelming","Hard to talk or think. Many warriors say they cannot describe it; it takes over everything."],
-["Crushing","Screaming or shaking. Tears, fear, and exhaustion. Needs urgent medical care."],
-["Worst imaginable","Pain that many warriors say is the worst they can imagine, lasting hours or days. It is an emergency."]];
-var sl=document.getElementById('sl');
-function upd(){var v=+sl.value;document.getElementById('lv').textContent=v;document.getElementById('mt').style.width=v*10+'%';
-document.getElementById('feel').innerHTML='<b style="font-family:system-ui,sans-serif">'+D[v-1][0]+'</b><br>'+D[v-1][1]}
-sl.oninput=upd;upd();
-function pair(a,b){var g=a.split('').concat();var out={};
-a.split('').forEach(function(x){b.split('').forEach(function(y){var k=[x,y].sort().join('');out[k]=(out[k]||0)+25})});return out}
-document.getElementById('go').onclick=function(){
-var a=document.getElementById('p1').value,b=document.getElementById('p2').value,o=pair(a,b);
-var C={AA:'#1d7a4f',AS:'#d98a1f',SS:'#b3202f'},h='<div class="bar">';
-['AA','AS','SS'].forEach(function(k){if(o[k])h+='<span style="width:'+o[k]+'%;background:'+C[k]+'">'+k+' '+o[k]+'%</span>'});
-h+='</div><p>Chance for each child:</p>';
-if(o.SS)h+='<p><b>Each pregnancy has a '+o.SS+'% chance of a child with sickle cell disease (SS).</b> Genetic counselling is strongly recommended before deciding.</p>';
-else if(o.AS&&a!=='AA'||o.AS&&b!=='AA')h+='<p>No chance of SS, but children may carry the trait (AS).</p>';
-else h+='<p>All children will be AA.</p>';
-document.getElementById('res').innerHTML=h};
-var Q=["You are more than your pain. You are strong, worthy and loved.","Rest is not weakness. It is how warriors recharge.","Your story matters. Your voice can change how people see SCD.","Ask for help early. That is wisdom, not weakness.","Some days you survive; some days you shine. Both count.","You were not born to be pitied. You were born to be understood."];
-var qi=0;function showq(){document.getElementById('q').textContent='\u201C'+Q[qi]+'\u201D'}
-document.getElementById('nq').onclick=function(){qi=(qi+1)%Q.length;showq()};showq();
-</script>
+
 <script src="nav.js"></script>
 <script>
 (function () {
@@ -280,6 +250,67 @@ document.getElementById('nq').onclick=function(){qi=(qi+1)%Q.length;showq()};sho
   hero.querySelector('.next').addEventListener('click', function () { show(cur + 1); restart(); });
   show(0);
   restart();
+})();
+</script>
+
+<script>
+(function () {
+  // ---- Feel the crisis: pain slider ----
+  var D = [
+    ["Mild", "A dull ache you can mostly ignore. For many warriors this is the first warning: stay alert and drink water."],
+    ["Uncomfortable", "Joints or bones feel heavy and tight. Concentrating on class or work gets harder."],
+    ["Distracting", "A steady throbbing ache. Conversations feel far away."],
+    ["Hard to ignore", "Pain spreads. Sitting or lying down no longer helps. Sleep is difficult."],
+    ["Wearing", "Every movement hurts. Warriors may start crying quietly or going silent."],
+    ["Severe", "Deep, relentless pain in the back, chest, arms or legs. Home medicine may not be enough."],
+    ["Intense", "It feels like bones are being crushed or squeezed. Breathing may hurt. Hospital time."],
+    ["Overwhelming", "Hard to talk or think. Many warriors say they cannot describe it; it takes over everything."],
+    ["Crushing", "Screaming or shaking. Tears, fear, and exhaustion. Needs urgent medical care."],
+    ["Worst imaginable", "Pain that many warriors say is the worst they can imagine, lasting hours or days. It is an emergency."]
+  ];
+  var sl = document.getElementById('sl');
+  if (sl) {
+    var upd = function () {
+      var v = +sl.value;
+      var lv = document.getElementById('lv');
+      var mt = document.getElementById('mt');
+      var feel = document.getElementById('feel');
+      if (lv) lv.textContent = v;
+      if (mt) mt.style.width = (v * 10) + '%';
+      if (feel) {
+        feel.innerHTML = '';
+        var b = document.createElement('b');
+        b.style.fontFamily = 'system-ui, sans-serif';
+        b.textContent = D[v - 1][0];
+        feel.appendChild(b);
+        feel.appendChild(document.createElement('br'));
+        feel.appendChild(document.createTextNode(D[v - 1][1]));
+      }
+    };
+    sl.addEventListener('input', upd);
+    upd();
+  }
+
+  // ---- Messages for warriors ----
+  var Q = [
+    "You are more than your pain. You are strong, worthy and loved.",
+    "Rest is not weakness. It is how warriors recharge.",
+    "Your story matters. Your voice can change how people see SCD.",
+    "Ask for help early. That is wisdom, not weakness.",
+    "Some days you survive; some days you shine. Both count.",
+    "You were not born to be pitied. You were born to be understood."
+  ];
+  var qi = Math.floor(Math.random() * Q.length);
+  var qEl = document.getElementById('q');
+  var nq = document.getElementById('nq');
+  function showq() {
+    if (qEl) qEl.textContent = '\u201C' + Q[qi] + '\u201D';
+  }
+  if (nq) nq.addEventListener('click', function () {
+    qi = (qi + 1) % Q.length;
+    showq();
+  });
+  showq();
 })();
 </script>
 </body>
