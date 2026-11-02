@@ -87,7 +87,7 @@ header p { margin-left: auto; margin-right: auto; }
 }
 
 .stats > * { min-width: 0; }
-main { overflow-x: hidden; }
+main { overflow-x: clip; }
 
 footer p { margin-left: auto; margin-right: auto; }
 
@@ -107,3 +107,5 @@ footer p { margin-left: auto; margin-right: auto; }
 .banner p { margin: 0 auto 14px; color: #fff; }
 .banner .btn { background: #fff; color: var(--red); }
 @media (prefers-reduced-motion: reduce) { .slide { transition: none; } }
+
+header .lead { margin-top: 8px; }
