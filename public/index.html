@@ -197,16 +197,11 @@ footer{margin-top:40px;text-align:center}
   <a href="quiz.html" style="display:inline-block;background:var(--red);color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font:600 16px system-ui,sans-serif">Take the Myth or Fact quiz</a>
 </div>
 </section>
-<section>
-<div class="card" style="text-align:center">
-  <p style="margin:0 auto"><b>In loving memory of Pamo.</b></p>
-  <p style="margin:6px auto 0">Lively, respectful, brilliant, and a lover of God. Pamo dreamed of helping Nigeria understand sickle cell. SickleFix carries that dream forward.</p>
-</div>
-</section>
+
 <div class="banner">
   <h2>Help us spread the word</h2>
   <p>Send SickleFix to one person today. Knowing the facts can change a life.</p>
-  <a class="btn" id="shareWa" target="_blank" rel="noopener">Share on WhatsApp</a>
+  <a class="btn" id="shareWa" href="https://wa.me/?text=SickleFix%3A%20Know%20your%20genotype.%20Believe%20the%20pain." target="_blank" rel="noopener">Share on WhatsApp</a>
 </div>
 <footer>
 <p><b>SickleFix</b> &middot; World Sickle Cell Day is June 19.</p>
@@ -311,6 +306,30 @@ footer{margin-top:40px;text-align:center}
     showq();
   });
   showq();
+})();
+</script>
+
+<script>
+(function () {
+  var btn = document.getElementById('shareWa');
+  if (!btn) return;
+
+  var link = location.origin + '/';
+  var msg = [
+    '\uD83D\uDD4A\uFE0F *In loving memory of Dada Michael Oluwapamilerinayo (Pamo)*',
+    '',
+    'Pamo wanted to create awareness about sickle cell before he passed on. He did not get to finish his project, so we are carrying it forward.',
+    '',
+    'Sickle cell is not a curse and it is not contagious. It is inherited, and the pain of a crisis is real, even when you cannot see it. About 1 in 4 Nigerians carries the gene, and most of us have never checked our genotype.',
+    '',
+    'Please take two minutes to check your genotype compatibility, take the Myth or Fact quiz, and learn how to support a warrior.',
+    '',
+    '\uD83D\uDC49 SickleFix: ' + link,
+    '',
+    '*Know your genotype. Believe the pain.* Share this with one person today.'
+  ].join('\n');
+
+  btn.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
 })();
 </script>
 </body>

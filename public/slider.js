@@ -32,8 +32,3 @@ if (slides.length) {
   restart();
 }
 
-const wa = document.getElementById('shareWa');
-if (wa) {
-  wa.href = 'https://wa.me/?text=' +
-    encodeURIComponent('Know your genotype. Believe the pain. SickleFix, in memory of Pamo: ' + location.origin);
-}
